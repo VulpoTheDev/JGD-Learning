@@ -11,7 +11,7 @@ import java.io.IOException;
 public class Player extends Entity {
     public final int screenX;
     public final int screenY;
-    GamePanel gamePanel;
+    public GamePanel gamePanel;
     KeyHandler keyHandler;
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
@@ -19,6 +19,7 @@ public class Player extends Entity {
         this.keyHandler = keyHandler;
         screenX = gamePanel.screenWidth / 2 - (gamePanel.tileSize / 2);
         screenY = gamePanel.screenHeight / 2 - (gamePanel.tileSize / 2);
+        solidArea = new Rectangle(8, 16, 32, 32);
 
         setDefaultValues();
         getPlayerImage();
@@ -32,21 +33,30 @@ public class Player extends Entity {
     }
 
     public void update() {
+
         if (keyHandler.upPressed || keyHandler.downPressed || keyHandler.rightPressed || keyHandler.leftPressed) {
             if (keyHandler.upPressed) {
                 direction = "up";
-                worldY -= speed;
             } else if (keyHandler.downPressed) {
                 direction = "down";
-                worldY += speed;
             } else if (keyHandler.leftPressed) {
                 direction = "left";
-                worldX -= speed;
             } else if (keyHandler.rightPressed) {
                 direction = "right";
-                worldX += speed;
             }
 
+            collisionOn = false;
+            gamePanel.collisionChecker.checkTile(this);
+
+            if (!collisionOn) {
+                switch (direction) {
+                    case "up" -> worldY -= speed;
+                    case "down" -> worldY += speed;
+                    case "right" -> worldX += speed;
+                    case "left" -> worldX -= speed;
+
+                }
+            }
             spriteCounter++;
             if (spriteCounter > 12) {
                 if (spriteNum == 1) {
