@@ -49,6 +49,7 @@ public class TileManager {
 
     public void getTileImage() {
         try {
+
             tile[0] = new Tile();
             tile[0].image = ImageIO.read(getClass().getResourceAsStream("/tiles/grass.png"));
 
@@ -84,7 +85,11 @@ public class TileManager {
             int worldY = worldRow * gamePanel.tileSize;
             int screenX = worldX - gamePanel.player.worldX + gamePanel.player.screenX;
             int screenY = worldY - gamePanel.player.worldY + gamePanel.player.screenY;
-            graphics2D.drawImage(tile[tileNum].image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
+
+            if (worldX + gamePanel.tileSize > gamePanel.player.worldX - gamePanel.player.screenX && worldX - gamePanel.tileSize < gamePanel.player.worldX + gamePanel.player.screenX && worldY + gamePanel.tileSize > gamePanel.player.worldY - gamePanel.player.screenY && worldY - gamePanel.tileSize < gamePanel.player.worldY + gamePanel.player.screenY) {
+                graphics2D.drawImage(tile[tileNum].image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
+
+            }
             worldCol++;
             if (worldCol == gamePanel.maxWorldCol) {
                 worldCol = 0;
