@@ -1,5 +1,6 @@
 package main;
 
+import object.Obj_Boots;
 import object.Obj_Chest;
 import object.Obj_Door;
 import object.Obj_Key;
@@ -23,9 +24,9 @@ public class AssetSetter {
         gamePanel.object[2].worldX = 38 * gamePanel.tileSize;
         gamePanel.object[2].worldY = 8 * gamePanel.tileSize;
         // Doors
-        gamePanel.object[3] = new Obj_Door();
+        gamePanel.object[3] = new Obj_Chest();
         gamePanel.object[3].worldX = 10 * gamePanel.tileSize;
-        gamePanel.object[3].worldY = 9 * gamePanel.tileSize;
+        gamePanel.object[3].worldY = 7 * gamePanel.tileSize;
 
         gamePanel.object[4] = new Obj_Door();
         gamePanel.object[4].worldX = 8 * gamePanel.tileSize;
@@ -35,9 +36,13 @@ public class AssetSetter {
         gamePanel.object[5].worldX = 12 * gamePanel.tileSize;
         gamePanel.object[5].worldY = 22 * gamePanel.tileSize;
 
-        gamePanel.object[6] = new Obj_Chest();
+        gamePanel.object[6] = new Obj_Door();
         gamePanel.object[6].worldX = 10 * gamePanel.tileSize;
         gamePanel.object[6].worldY = 11 * gamePanel.tileSize;
+
+        gamePanel.object[7] = new Obj_Boots();
+        gamePanel.object[7].worldX = 37 * gamePanel.tileSize;
+        gamePanel.object[7].worldY = 42 * gamePanel.tileSize;
 
 
     }

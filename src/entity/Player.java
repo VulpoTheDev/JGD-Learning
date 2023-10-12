@@ -12,6 +12,7 @@ public class Player extends Entity {
     public final int screenX;
     public final int screenY;
     public GamePanel gamePanel;
+    public int keys = 0;
     KeyHandler keyHandler;
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
@@ -20,6 +21,9 @@ public class Player extends Entity {
         screenX = gamePanel.screenWidth / 2 - (gamePanel.tileSize / 2);
         screenY = gamePanel.screenHeight / 2 - (gamePanel.tileSize / 2);
         solidArea = new Rectangle(8, 16, 32, 32);
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
+
 
         setDefaultValues();
         getPlayerImage();
@@ -47,6 +51,8 @@ public class Player extends Entity {
 
             collisionOn = false;
             gamePanel.collisionChecker.checkTile(this);
+            int object = gamePanel.collisionChecker.checkObject(this, true);
+            pickUpObject(object);
 
             if (!collisionOn) {
                 switch (direction) {
@@ -99,8 +105,45 @@ public class Player extends Entity {
                 }
                 break;
         }
+        graphics2D.drawString("(" + worldX / gamePanel.tileSize + "," + worldY / gamePanel.tileSize + ")", screenX / 4, screenY / 4);
         graphics2D.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
 
+    }
+
+    public void pickUpObject(int index) {
+        if (index != 999) {
+            String name = gamePanel.object[index].name;
+            switch (name) {
+                case "key":
+                    keys++;
+                    gamePanel.playSoundEffect(1);
+                    gamePanel.ui.showMessage("You got a key!");
+                    break;
+                case "door":
+                    if (keys == 0) {
+                        gamePanel.ui.showMessage("You need a key");
+                        return;
+                    }
+                    gamePanel.object[index] = null;
+                    keys--;
+                    gamePanel.ui.showMessage("You have unlocked a door");
+                    gamePanel.playSoundEffect(3);
+
+                    break;
+                case "boots":
+                    speed += 2;
+                    gamePanel.ui.showMessage("You feel a little light on your feet");
+                    gamePanel.playSoundEffect(2);
+
+                    break;
+                case "chest":
+                    gamePanel.ui.gameFinished = true;
+                    gamePanel.stopMusic();
+                    gamePanel.playSoundEffect(4);
+                    break;
+            }
+            gamePanel.object[index] = null;
+        }
     }
 
     public void getPlayerImage() {

@@ -8,27 +8,35 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GamePanel extends JPanel implements Runnable {
+
     public final int maxScreenCol = 16;
     public final int maxScreenRow = 12;
+    // WORLD SETTINGS
     public final int maxWorldCol = 50;
     public final int maxWorldRow = 50;
-    final int FPS = 60;
     // Screen Setting
     final int originalTileSize = 16; // 16x16 tile
     final int scale = 3;
     public final int tileSize = originalTileSize * scale; // 48x48 tile
-    public final int worldWidth = tileSize * maxWorldCol;
-    public final int worldHeight = tileSize * maxWorldRow;
     public final int screenWidth = tileSize * maxScreenCol; // 768px
     public final int screenHeight = tileSize * maxScreenRow; // 578px
-    public SuperObject[] object = new SuperObject[10];
-    public AssetSetter assetSetter = new AssetSetter(this);
+    // FPS
+    final int FPS = 60;
 
-    public CollisionChecker collisionChecker = new CollisionChecker(this);
-    Thread gameThread;
-    KeyHandler keyHandler = new KeyHandler();
+    // GAME ENGINE STUFF
+    public AssetSetter assetSetter = new AssetSetter(this);                     // Places Assets
+    public Sound sound = new Sound();                                                     // Manages Sound
+    public CollisionChecker collisionChecker = new CollisionChecker(this);     // Collision Checker
+    public Thread gameThread;                                                            // Game Thread
+    public KeyHandler keyHandler = new KeyHandler();                                     // Key Handler
+    public TileManager tileManager = new TileManager(this);                   // Tile Manager
+    public UI ui = new UI(this);                                              // UI
+
+
+    // ENTITY AND OBJECTS
     public Player player = new Player(this, keyHandler);
-    TileManager tileManager = new TileManager(this);
+    public SuperObject[] object = new SuperObject[10];
+
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -76,6 +84,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void setUpGame() {
         assetSetter.setObject();
+        playMusic(0);
     }
 
     public void update() {
@@ -92,8 +101,22 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
         player.draw(graphics2D);
+        ui.draw(graphics2D);
         graphics2D.dispose();
     }
 
+    public void playMusic(int index) {
+        sound.setFile(index);
+        sound.play();
+        sound.loop();
+    }
 
+    public void stopMusic() {
+        sound.stop();
+    }
+
+    public void playSoundEffect(int index) {
+        sound.setFile(index);
+        sound.play();
+    }
 }
