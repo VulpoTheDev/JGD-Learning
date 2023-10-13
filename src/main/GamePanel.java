@@ -14,6 +14,8 @@ public class GamePanel extends JPanel implements Runnable {
     // WORLD SETTINGS
     public final int maxWorldCol = 50;
     public final int maxWorldRow = 50;
+    public final int playState = 1;
+    public final int pauseState = 2;
     // Screen Setting
     final int originalTileSize = 16; // 16x16 tile
     final int scale = 3;
@@ -22,17 +24,16 @@ public class GamePanel extends JPanel implements Runnable {
     public final int screenHeight = tileSize * maxScreenRow; // 578px
     // FPS
     final int FPS = 60;
-
     // GAME ENGINE STUFF
     public AssetSetter assetSetter = new AssetSetter(this);                     // Places Assets
     public Sound sound = new Sound();                                                     // Manages Sound
     public CollisionChecker collisionChecker = new CollisionChecker(this);     // Collision Checker
     public Thread gameThread;                                                            // Game Thread
-    public KeyHandler keyHandler = new KeyHandler();                                     // Key Handler
+    public KeyHandler keyHandler = new KeyHandler(this);                      // Key Handler
     public TileManager tileManager = new TileManager(this);                   // Tile Manager
     public UI ui = new UI(this);                                              // UI
-
-
+    // Game State
+    public int gameState = 1;
     // ENTITY AND OBJECTS
     public Player player = new Player(this, keyHandler);
     public SuperObject[] object = new SuperObject[10];
@@ -44,6 +45,12 @@ public class GamePanel extends JPanel implements Runnable {
         this.setDoubleBuffered(true);
         this.addKeyListener(keyHandler);
         this.setFocusable(true);
+    }
+
+    public void setUpGame() {
+        assetSetter.setObject();
+        playMusic(0);
+        gameState = playState;
     }
 
     public void startGameThread() {
@@ -82,26 +89,51 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    public void setUpGame() {
-        assetSetter.setObject();
-        playMusic(0);
-    }
 
     public void update() {
-        player.update();
+        switch (gameState) {
+            case playState:
+                player.update();
+                break;
+            case pauseState:
+                break;
+        }
     }
 
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
         Graphics2D graphics2D = (Graphics2D) graphics;
+
+
+        long drawStart = 0;
+        drawStart = System.nanoTime();
+
+        // Draw Tiles
         tileManager.draw(graphics2D);
+
+        // Draw Objects
         for (SuperObject superObject : object) {
             if (superObject != null) {
                 superObject.draw(graphics2D, this);
             }
         }
+
+        // Draw Player
         player.draw(graphics2D);
+
+        // Draw UI
         ui.draw(graphics2D);
+        if (keyHandler.checkDrawTime) {
+
+            long drawEnd = System.nanoTime();
+            long passed = drawEnd - drawStart;
+            graphics2D.setColor(Color.white);
+            graphics2D.drawString("Draw Time " + passed, 10, 400);
+            System.out.println("Draw time: " + passed);
+        }
+
+
+        // Dispose Graphics (saves cpu)
         graphics2D.dispose();
     }
 
