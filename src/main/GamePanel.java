@@ -15,8 +15,12 @@ public class GamePanel extends JPanel implements Runnable {
     // WORLD SETTINGS
     public final int maxWorldCol = 50;
     public final int maxWorldRow = 50;
+
+    // Game States
     public final int playState = 1;
     public final int pauseState = 2;
+    public final int dialougeState = 3;
+
     // Screen Setting
     final int originalTileSize = 16; // 16x16 tile
     final int scale = 3;
@@ -106,6 +110,9 @@ public class GamePanel extends JPanel implements Runnable {
                 player.update();
                 break;
             case pauseState:
+                break;
+            case dialougeState:
+                ui.drawDialogueScreen();
                 break;
         }
     }

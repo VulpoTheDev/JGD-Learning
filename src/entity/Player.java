@@ -78,8 +78,13 @@ public class Player extends Entity {
 
     public void interactNPC(int index) {
         if (index != 999) {
-            gamePanel.ui.showMessage("NPC: Ow");
+            if (gamePanel.keyHandler.enterPressed) {
+
+                gamePanel.gameState = gamePanel.dialougeState;
+                gamePanel.npc[0].speak();
+            }
         }
+        gamePanel.keyHandler.enterPressed = false;
     }
 
     public void draw(Graphics2D graphics2D) {

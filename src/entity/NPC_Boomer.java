@@ -10,8 +10,22 @@ public class NPC_Boomer extends Entity {
 
         direction = "down";
         speed = 1;
+
         getImage();
+        setDialogue();
     }
+
+    public void setDialogue() {
+        dialogues[0] = "Good Day!";
+        dialogues[1] = "Are you HERE to find ZE treasure?";
+        dialogues[2] = "I used to be a great wizard until \nI took a spell to the knee.";
+        dialogues[3] = "Alrighty then, may luck find you!";
+    }
+
+    public void speak() {
+        super.speak();
+    }
+
 
     public void setAction() {
         actionLockCounter++;
