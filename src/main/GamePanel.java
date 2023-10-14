@@ -128,14 +128,15 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
 
+        // Draw Player
+        player.draw(graphics2D);
+
         for (Entity npc_char : npc) {
             if (npc_char != null) {
                 npc_char.draw(graphics2D);
             }
         }
 
-        // Draw Player
-        player.draw(graphics2D);
 
         // Draw UI
         ui.draw(graphics2D);
