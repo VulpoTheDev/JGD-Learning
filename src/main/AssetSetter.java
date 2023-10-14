@@ -1,5 +1,6 @@
 package main;
 
+import entity.NPC_Boomer;
 import object.Obj_Boots;
 import object.Obj_Chest;
 import object.Obj_Door;
@@ -10,6 +11,12 @@ public class AssetSetter {
 
     public AssetSetter(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
+    }
+
+    public void setNPC() {
+        gamePanel.npc[0] = new NPC_Boomer(gamePanel);
+        gamePanel.npc[0].worldX = gamePanel.tileSize * 21;
+        gamePanel.npc[0].worldY = gamePanel.tileSize * 21;
     }
 
     public void setObject() {

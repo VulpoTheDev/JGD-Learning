@@ -2,21 +2,18 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
-import main.UtilityTool;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Player extends Entity {
     public final int screenX;
     public final int screenY;
-    public GamePanel gamePanel;
     public int keys = 0;
     KeyHandler keyHandler;
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
-        this.gamePanel = gamePanel;
+        super(gamePanel);
         this.keyHandler = keyHandler;
         screenX = gamePanel.screenWidth / 2 - (gamePanel.tileSize / 2);
         screenY = gamePanel.screenHeight / 2 - (gamePanel.tileSize / 2);
@@ -54,6 +51,10 @@ public class Player extends Entity {
             int object = gamePanel.collisionChecker.checkObject(this, true);
             pickUpObject(object);
 
+            // Check NPC COllsion
+            int npcIndex = gamePanel.collisionChecker.checkEntity(this, gamePanel.npc);
+            interactNPC(npcIndex);
+
             if (!collisionOn) {
                 switch (direction) {
                     case "up" -> worldY -= speed;
@@ -72,6 +73,12 @@ public class Player extends Entity {
                 }
                 spriteCounter = 0;
             }
+        }
+    }
+
+    public void interactNPC(int index) {
+        if (index != 999) {
+            gamePanel.ui.showMessage("NPC: Ow");
         }
     }
 
@@ -146,25 +153,13 @@ public class Player extends Entity {
     }
 
     public void getPlayerImage() {
-        up1 = setup("boy_up_1");
-        up2 = setup("boy_up_2");
-        down1 = setup("boy_down_1");
-        down2 = setup("boy_down_2");
-        right1 = setup("boy_right_1");
-        right2 = setup("boy_right_2");
-        left1 = setup("boy_left_1");
-        left2 = setup("boy_left_2");
-    }
-
-    public BufferedImage setup(String imageName) {
-        UtilityTool utils = new UtilityTool();
-        BufferedImage image = null;
-        try {
-            image = ImageIO.read(getClass().getResourceAsStream("/player/" + imageName + ".png"));
-            image = utils.scaleImage(image, gamePanel.tileSize, gamePanel.tileSize);
-        } catch (Exception err) {
-            err.printStackTrace();
-        }
-        return image;
+        up1 = setup("/player/boy_up_1");
+        up2 = setup("/player/boy_up_2");
+        down1 = setup("/player/boy_down_1");
+        down2 = setup("/player/boy_down_2");
+        right1 = setup("/player/boy_right_1");
+        right2 = setup("/player/boy_right_2");
+        left1 = setup("/player/boy_left_1");
+        left2 = setup("/player/boy_left_2");
     }
 }
