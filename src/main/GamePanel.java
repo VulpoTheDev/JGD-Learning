@@ -2,11 +2,12 @@ package main;
 
 import entity.Entity;
 import entity.Player;
-import object.SuperObject;
 import tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 public class GamePanel extends JPanel implements Runnable {
 
@@ -17,6 +18,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int maxWorldRow = 50;
 
     // Game States
+    public final int titleState = 0;
     public final int playState = 1;
     public final int pauseState = 2;
     public final int dialougeState = 3;
@@ -37,13 +39,15 @@ public class GamePanel extends JPanel implements Runnable {
     public KeyHandler keyHandler = new KeyHandler(this);                      // Key Handler
     public TileManager tileManager = new TileManager(this);                   // Tile Manager
     public UI ui = new UI(this);                                              // UI
+    public EventHandler eventHandler = new EventHandler(this);
     // Game State
-    public int gameState = 1;
+    public int gameState = 0;
     // ENTITY AND OBJECTS
     public Player player = new Player(this, keyHandler);
-    public SuperObject[] object = new SuperObject[10];
+    public Entity[] object = new Entity[10];
     public Entity[] npc = new Entity[10];
-
+    public Entity[] monster = new Entity[20];
+    ArrayList<Entity> entityArrayList = new ArrayList<>();
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -56,8 +60,8 @@ public class GamePanel extends JPanel implements Runnable {
     public void setUpGame() {
         assetSetter.setObject();
         assetSetter.setNPC();
-        playMusic(0);
-        gameState = playState;
+        assetSetter.spawmMonster();
+        gameState = titleState;
     }
 
     public void startGameThread() {
@@ -100,13 +104,8 @@ public class GamePanel extends JPanel implements Runnable {
     public void update() {
         switch (gameState) {
             case playState:
-                for (Entity npc_char : npc) {
-                    if (npc_char != null) {
-
-                        npc_char.update();
-                    }
-
-                }
+                for (Entity npc_char : npc) if (npc_char != null) npc_char.update();
+                for (Entity mons : monster) if (mons != null) mons.update();
                 player.update();
                 break;
             case pauseState:
@@ -125,28 +124,36 @@ public class GamePanel extends JPanel implements Runnable {
         long drawStart = 0;
         drawStart = System.nanoTime();
 
-        // Draw Tiles
-        tileManager.draw(graphics2D);
+        // TITLE SCREEN
+        if (gameState == titleState) {
+            ui.draw(graphics2D);
 
-        // Draw Objects
-        for (SuperObject superObject : object) {
-            if (superObject != null) {
-                superObject.draw(graphics2D, this);
-            }
+        } else {
+            // Draw Tiles
+            tileManager.draw(graphics2D);
+
+            // Adds Players
+            entityArrayList.add(player);
+            // Adds NPCS
+            for (Entity npcs : npc) if (npcs != null) entityArrayList.add(npcs);
+            // Adds Objects
+            for (Entity objs : object) if (objs != null) entityArrayList.add(objs);
+            // Monsters
+            for (Entity mons : monster) if (mons != null) entityArrayList.add(mons);
+
+            // Sort
+            entityArrayList.sort(Comparator.comparingInt(e -> e.worldY));
+
+            // Draw Entities
+            for (Entity entity : entityArrayList) entity.draw(graphics2D);
+
+            // Resets
+            entityArrayList.clear();
+
+            // Draw UI
+            ui.draw(graphics2D);
         }
 
-        // Draw Player
-        player.draw(graphics2D);
-
-        for (Entity npc_char : npc) {
-            if (npc_char != null) {
-                npc_char.draw(graphics2D);
-            }
-        }
-
-
-        // Draw UI
-        ui.draw(graphics2D);
         if (keyHandler.checkDrawTime) {
 
             long drawEnd = System.nanoTime();

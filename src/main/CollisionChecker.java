@@ -1,7 +1,6 @@
 package main;
 
 import entity.Entity;
-import object.SuperObject;
 
 public class CollisionChecker {
     GamePanel gamePanel;
@@ -62,7 +61,7 @@ public class CollisionChecker {
     public int checkObject(Entity entity, boolean player) {
         int index = 999;
         for (int i = 0; i < gamePanel.object.length; i++) {
-            SuperObject object = gamePanel.object[i];
+            Entity object = gamePanel.object[i];
             if (object != null) {
                 // Get Entity Solid Area
                 entity.solidArea.x = entity.worldX + entity.solidArea.x;

@@ -31,6 +31,9 @@ public class Player extends Entity {
         worldY = gamePanel.tileSize * 21;
         speed = 4;
         direction = "down";
+        // Player Status
+        maxLife = 6;
+        currentLife = maxLife;
     }
 
     public void update() {
@@ -54,6 +57,10 @@ public class Player extends Entity {
             // Check NPC COllsion
             int npcIndex = gamePanel.collisionChecker.checkEntity(this, gamePanel.npc);
             interactNPC(npcIndex);
+
+            // Check Event
+            gamePanel.eventHandler.checkEvent();
+            gamePanel.keyHandler.enterPressed = false;
 
             if (!collisionOn) {
                 switch (direction) {
@@ -84,7 +91,6 @@ public class Player extends Entity {
                 gamePanel.npc[0].speak();
             }
         }
-        gamePanel.keyHandler.enterPressed = false;
     }
 
     public void draw(Graphics2D graphics2D) {

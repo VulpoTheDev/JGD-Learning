@@ -1,5 +1,7 @@
 package main;
 
+import entity.Entity;
+import object.Obj_Heart;
 import object.Obj_Key;
 
 import java.awt.*;
@@ -14,6 +16,8 @@ public class UI {
     public boolean gameFinished = false;
     public String currentDialogue = "";
     public Font maruMonica, purisaB;
+    public int commandNumber = 0;
+    BufferedImage heart_full, heart_half, heart_empty;
     Graphics2D graphics2D;
     GamePanel gamePanel;
     Font arial_40, arial_80;
@@ -22,17 +26,23 @@ public class UI {
     public UI(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
         try {
-            InputStream inputStream = getClass().getResourceAsStream("/font/x12y16pxMaruMonica.tff");
+            InputStream inputStream = getClass().getResourceAsStream("/fonts/x12y16pxMaruMonica.ttf");
             assert inputStream != null;
             maruMonica = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-            inputStream = getClass().getResourceAsStream("/fonts/Purisa Bold.tff");
+            inputStream = getClass().getResourceAsStream("/fonts/Purisa Bold.ttf");
             purisaB = Font.createFont(Font.TRUETYPE_FONT, inputStream);
         } catch (FontFormatException | IOException err) {
             err.printStackTrace();
         }
 
+        // Create HUD Objects
+        Entity heart = new Obj_Heart(gamePanel);
+        heart_full = heart.image1;
+        heart_half = heart.image2;
+        heart_empty = heart.image3;
+
         Obj_Key key = new Obj_Key(this.gamePanel);
-        keyImage = key.image;
+        keyImage = key.image1;
     }
 
     public void showMessage(String text) {
@@ -43,7 +53,7 @@ public class UI {
     public void draw(Graphics2D graphics2D) {
         this.graphics2D = graphics2D;
         if (gamePanel.gameState == gamePanel.playState) {
-
+            drawPlayerLife();
         }
         if (gamePanel.gameState == gamePanel.pauseState) {
             drawPauseScreen();
@@ -51,6 +61,11 @@ public class UI {
         if (gamePanel.gameState == gamePanel.dialougeState) {
             drawDialogueScreen();
         }
+
+        if (gamePanel.gameState == gamePanel.titleState) {
+            drawTitleScreen();
+        }
+
 //        if (gameFinished) {
 //            graphics2D.setFont(arial_40);
 //            graphics2D.setColor(Color.white);
@@ -110,6 +125,31 @@ public class UI {
         graphics2D.drawString(text, x, gamePanel.screenHeight / 2);
     }
 
+    public void drawPlayerLife() {
+        int x = gamePanel.tileSize / 2;
+        int y = gamePanel.tileSize / 2;
+        int i = 0;
+        // Blank Hearts
+        while (i < gamePanel.player.maxLife / 2) {
+            graphics2D.drawImage(heart_empty, x, y, null);
+            i++;
+            x += gamePanel.tileSize;
+        }
+        // Reset
+        x = gamePanel.tileSize / 2;
+        y = gamePanel.tileSize / 2;
+        i = 0;
+        while (i < gamePanel.player.currentLife) {
+            graphics2D.drawImage(heart_half, x, y, null);
+            i++;
+            if (i < gamePanel.player.currentLife) {
+                graphics2D.drawImage(heart_full, x, y, null);
+            }
+            i++;
+            x += gamePanel.tileSize;
+        }
+    }
+
     public void drawDialogueScreen() {
         int x = gamePanel.tileSize * 2;
         int y = gamePanel.tileSize / 2;
@@ -122,9 +162,56 @@ public class UI {
         graphics2D.setColor(new Color(255, 255, 255));
         graphics2D.setFont(graphics2D.getFont().deriveFont(Font.PLAIN, 32F));
         for (String line : currentDialogue.split("\n")) {
-            graphics2D.drawString(line, x, y);
+            try {
+                graphics2D.drawString(line, x, y);
+            } catch (Exception ex) {
+            }
             y += 40;
         }
+    }
+
+    public void drawTitleScreen() {
+        graphics2D.setColor(new Color(119, 7, 217));
+        graphics2D.fillRect(0, 0, gamePanel.screenWidth, gamePanel.screenHeight);
+        graphics2D.setFont(maruMonica);
+        graphics2D.setFont(graphics2D.getFont().deriveFont(Font.BOLD, 90F));
+        String text = "Blue Boy Adventures";
+        int x = getXForCenteredText(text);
+        int y = gamePanel.tileSize * 3;
+        graphics2D.setColor(new Color(255, 255, 255));
+        graphics2D.drawString(text, x, y);
+
+        x = gamePanel.screenWidth / 2 - (gamePanel.tileSize * 2) / 2;
+        y += gamePanel.tileSize * 2;
+        graphics2D.drawImage(gamePanel.player.down1, x, y, gamePanel.tileSize * 2, gamePanel.tileSize * 2, null);
+
+        graphics2D.setFont(graphics2D.getFont().deriveFont(Font.BOLD, 48F));
+        text = "NEW GAME";
+        x = getXForCenteredText(text);
+        y += gamePanel.tileSize * 3.5;
+        graphics2D.drawString(text, x, y);
+        if (commandNumber == 0) {
+            graphics2D.drawString(">", x - gamePanel.tileSize, y);
+        }
+
+        graphics2D.setFont(graphics2D.getFont().deriveFont(Font.BOLD, 48F));
+        text = "LOAD GAME";
+        x = getXForCenteredText(text);
+        y += gamePanel.tileSize;
+        graphics2D.drawString(text, x, y);
+        if (commandNumber == 1) {
+            graphics2D.drawString(">", x - gamePanel.tileSize, y);
+        }
+
+        graphics2D.setFont(graphics2D.getFont().deriveFont(Font.BOLD, 48F));
+        text = "EXIT";
+        x = getXForCenteredText(text);
+        y += gamePanel.tileSize;
+        graphics2D.drawString(text, x, y);
+        if (commandNumber == 2) {
+            graphics2D.drawString(">", x - gamePanel.tileSize, y);
+        }
+
     }
 
     public void drawSubWindow(int x, int y, int width, int height) {

@@ -38,6 +38,30 @@ public class KeyHandler implements KeyListener {
             switch (code) {
                 case KeyEvent.VK_ENTER -> gamePanel.gameState = gamePanel.playState;
             }
+        } else if (gamePanel.gameState == gamePanel.titleState) {
+            switch (code) {
+
+                case KeyEvent.VK_W -> {
+                    if (gamePanel.ui.commandNumber != 0) {
+                        gamePanel.ui.commandNumber--;
+                    }
+                }
+                case KeyEvent.VK_S -> gamePanel.ui.commandNumber++;
+                case KeyEvent.VK_ENTER -> {
+                    switch (gamePanel.ui.commandNumber) {
+                        case 0:
+                            gamePanel.gameState = gamePanel.playState;
+                            gamePanel.playMusic(0);
+                            break;
+                        case 1:
+                            // Add Later
+                            break;
+                        case 2:
+                            System.exit(05);
+                    }
+                }
+            }
+
         }
     }
 
